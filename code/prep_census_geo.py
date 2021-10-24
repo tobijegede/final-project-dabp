@@ -7,7 +7,7 @@ import pandas as pd
 # https://www.census.gov/geographies/reference-files/time-series/geo/gazetteer-files.2019.html
 df_geo = pd.read_csv('https://www2.census.gov/geo/docs/maps-data/data/gazetteer/2019_Gazetteer/2019_gaz_tracts_42.txt', sep = '\t')
 df_geo['GEOID'] = df_geo['GEOID'].astype(str)
-df_geo.columns = df_geo.columns.str.lower()
+df_geo.columns = df_geo.columns.str.lower().str.strip()
 
 ### load and prep ACS population and hh data
 # define parameters for ACS API call

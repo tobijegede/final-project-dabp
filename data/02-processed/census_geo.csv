@@ -1,4 +1,4 @@
-state,county,tract,pop_tot,num_hh_tot,num_hh_1p,num_hh_2p,num_hh_3p,num_hh_4p,num_hh_5p,num_hh_6p,num_hh_7plus,geoid,usps,aland,awater,aland_sqmi,awater_sqmi,intptlat,intptlong                                                                                                                             
+state,county,tract,pop_tot,num_hh_tot,num_hh_1p,num_hh_2p,num_hh_3p,num_hh_4p,num_hh_5p,num_hh_6p,num_hh_7plus,geoid,usps,aland,awater,aland_sqmi,awater_sqmi,intptlat,intptlong
 42,003,480102,2878,1238,390,419,164,180,85,0,0,42003480102,PA,1692783,0,0.654,0.0,40.3443354,-79.9995243
 42,003,484500,6012,2706,1019,953,233,275,165,37,24,42003484500,PA,2508908,0,0.969,0.0,40.3822012,-79.9042086
 42,003,010300,6652,322,137,65,108,3,9,0,0,42003010300,PA,866168,217686,0.334,0.084,40.4361325,-79.9853307
