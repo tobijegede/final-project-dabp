@@ -9,7 +9,7 @@ df_geo = pd.read_csv('https://www2.census.gov/geo/docs/maps-data/data/gazetteer/
 df_geo['GEOID'] = df_geo['GEOID'].astype(str)
 df_geo.columns = df_geo.columns.str.lower().str.strip()
 
-### load and prep ACS population and hh data
+### load and prep ACS population, hh, and vehicle data
 # define parameters for ACS API call
 # variables: https://api.census.gov/data/2019/acs/acs5/variables.html
 year = '2019' # 2019 ACS
@@ -19,21 +19,7 @@ county = '003' # 003 = allegheny county
 geo = 'tract' # census tracts
 variables = {'B01003_001E':'pop_tot',
              'B11016_001E':'num_hh_tot',
-             'B11016_002E':'num_fam_hh_tot',
-             'B11016_003E':'num_fam_hh_2p',
-             'B11016_004E':'num_fam_hh_3p',
-             'B11016_005E':'num_fam_hh_4p',
-             'B11016_006E':'num_fam_hh_5p',
-             'B11016_007E':'num_fam_hh_6p',
-             'B11016_008E':'num_fam_hh_7plus',
-             'B11016_009E':'num_nonfam_hh_tot',
-             'B11016_010E':'num_nonfam_hh_1p',
-             'B11016_011E':'num_nonfam_hh_2p',
-             'B11016_012E':'num_nonfam_hh_3p',
-             'B11016_013E':'num_nonfam_hh_4p',
-             'B11016_014E':'num_nonfam_hh_5p',
-             'B11016_015E':'num_nonfam_hh_6p',
-             'B11016_016E':'num_nonfam_hh_7plus'}
+             'B25046_001E':'num_vehicles_tot'}
 
 # build url
 # API guidance: https://www.census.gov/programs-surveys/acs/guidance/handbooks/api.html
@@ -60,25 +46,29 @@ df = df[df_cols]
 # to numeric
 df[df.columns[3:]] = df[df.columns[3:]].apply(pd.to_numeric)
 
-# combine family + nonfamily counts
-df['num_hh_1p'] = df['num_nonfam_hh_1p']
-df['num_hh_2p'] = df['num_fam_hh_2p'] + df['num_nonfam_hh_2p']
-df['num_hh_3p'] = df['num_fam_hh_3p'] + df['num_nonfam_hh_3p']
-df['num_hh_4p'] = df['num_fam_hh_4p'] + df['num_nonfam_hh_4p']
-df['num_hh_5p'] = df['num_fam_hh_5p'] + df['num_nonfam_hh_5p']
-df['num_hh_6p'] = df['num_fam_hh_6p'] + df['num_nonfam_hh_6p']
-df['num_hh_7plus'] = df['num_fam_hh_7plus'] + df['num_nonfam_hh_7plus']
-df = df.loc[:, ~df.columns.str.startswith('num_fam_hh_')]
-df = df.loc[:, ~df.columns.str.startswith('num_nonfam_hh_')]
+# calculate avg vehicles per hh, assign low vehicle access flag
+df.loc[df['num_hh_tot'] > 0, 'avg_vehicle_per_hh'] = df['num_vehicles_tot'] / df['num_hh_tot']
+def va_group(row):
+    if row['avg_vehicle_per_hh'] <= df['avg_vehicle_per_hh'].quantile(0.25):
+        val = 1
+    else:
+        val = 0
+    return val
+df['low_vehicle_access'] = df.apply(va_group, axis = 1)
 
 ### merge ACS with Census Gazetteer data
 df['geoid'] = df['state'] + df['county'] + df['tract']
 df = df.merge(df_geo, how = 'left', on = 'geoid')
 
+# drop
+df = df.drop(columns = ['usps', 'aland', 'awater', 'aland_sqmi', 'awater_sqmi'], axis = 1)
+
 # checks
 df.head()
 df.shape
+df.dtypes
 sum(df['pop_tot'])
+sum(df['num_hh_tot'])
 
 # export
 df.to_csv('..\\data\\02-processed\\census_geo.csv', index = False)
