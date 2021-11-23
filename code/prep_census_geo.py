@@ -2,6 +2,7 @@
 import requests
 import json
 import pandas as pd
+import numpy as np
 
 ### load and prep Census Gazetteer data (representative lat/long)
 # https://www.census.gov/geographies/reference-files/time-series/geo/gazetteer-files.2019.html
@@ -37,6 +38,9 @@ if response.status_code == 200:
 df = pd.DataFrame(data)
 df = df.rename(columns = df.iloc[0]).drop([0])
 df = df.rename(columns = variables)
+
+# replace missings
+df = df.replace('-666666666', np.NaN)
 
 # rearrange columns
 df_cols = df.columns.to_list()
