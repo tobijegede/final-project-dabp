@@ -2,10 +2,17 @@
 import pandas as pd
 from geopy.distance import geodesic
 import numpy as np
+import os
+
+### working directory paths
+#get the current working directory
+current_directory = os.getcwd()
+#go up a level in the directory path to get to the "final-project-dabp" folder
+path_parent = os.path.dirname(current_directory)
 
 ### import data
-df_cen = pd.read_csv('..\\data\\02-processed\\census_geo.csv')
-df_pod = pd.read_csv('..\\data\\02-processed\\pod_geo.csv')
+df_cen = pd.read_csv(os.path.join(path_parent, "data", "02-processed", "census_geo.csv"))
+df_pod = pd.read_csv(os.path.join(path_parent, "data", "02-processed", "pod_geo.csv"))
 
 ### store lat/longs in lists of tuples
 cen_list = list(zip(df_cen['intptlat'], df_cen['intptlong']))
@@ -24,4 +31,4 @@ distances = np.array(dist_list)
 print(distances.shape)
 
 ### export
-np.savetxt('..\\data\\02-processed\\distance_matrix.csv', distances, delimiter=",", fmt = '%5.2f')
+np.savetxt(os.path.join(path_parent, "data", "02-processed", "distance_matrix.csv"), distances, delimiter=",", fmt = '%5.2f')

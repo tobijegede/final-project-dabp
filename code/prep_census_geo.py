@@ -3,6 +3,13 @@ import requests
 import json
 import pandas as pd
 import numpy as np
+import os
+
+### working directory paths
+#get the current working directory
+current_directory = os.getcwd()
+#go up a level in the directory path to get to the "final-project-dabp" folder
+path_parent = os.path.dirname(current_directory)
 
 ### load and prep Census Gazetteer data (representative lat/long)
 # https://www.census.gov/geographies/reference-files/time-series/geo/gazetteer-files.2019.html
@@ -75,4 +82,4 @@ sum(df['pop_tot'])
 sum(df['num_hh_tot'])
 
 # export
-df.to_csv('..\\data\\02-processed\\census_geo.csv', index = False)
+df.to_csv(os.path.join(path_parent, "data", "02-processed", "census_geo.csv"), index = False)
